@@ -3,6 +3,7 @@ package io.pismo.test.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -26,6 +27,7 @@ public class Transaction implements Comparable<Transaction>{
 	
 	@JsonProperty(value = "amount")
 	@NotNull(message = "amount cannot be null")
+	@Min(value = (long)0.01, message = "amount must be greater than zero")
 	private BigDecimal amount;
 	
 	private LocalDateTime eventDate;

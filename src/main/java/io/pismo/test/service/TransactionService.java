@@ -1,11 +1,10 @@
 package io.pismo.test.service;
 
-import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.pismo.test.entity.Account;
+import io.pismo.test.entity.OperationType;
 import io.pismo.test.entity.Transaction;
 import io.pismo.test.exception.BusinessException;
 import io.pismo.test.exception.NotFoundException;
@@ -25,8 +24,8 @@ public class TransactionService {
 	
 	public Transaction insertTransaction(Transaction transaction) throws BusinessException, NotFoundException {
 		
-		if (transaction.getAmount().equals(BigDecimal.ZERO)) {
-			throw new BusinessException("amount cannot be zero");
+		if (transaction.getOperationType() != OperationType.PAGAMENTO) {
+			transaction.setAmount(transaction.getAmount().negate());
 		}
 		Account account = accountService.get(transaction.getAccountId());
 		transaction.setEventDate(DateUtil.getDate());

@@ -22,6 +22,18 @@ public class PismoRepository {
 		return DATABASE.get(accountId);
 	}
 	
+	public Account findAccountByDocumentNumber(Integer documentNumber) {
+		Account account = null;
+		for (Map.Entry<Integer, Account> entry : DATABASE.entrySet()) {
+			Account accountMap = entry.getValue();
+			if (accountMap.getDocumentNumber().equals(documentNumber)) {
+	        	account = accountMap;
+	        	break;
+	        }
+		}
+		return account;
+	}
+	
 	public Account insert(Account account) {
 		if (account.getId() == null) {
 			account.setId(idx++);

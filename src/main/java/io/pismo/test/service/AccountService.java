@@ -33,6 +33,10 @@ public class AccountService {
 				throw new BusinessException("Account already exists");
 			}
 		}
+		Account existAccount = repository.findAccountByDocumentNumber(account.getDocumentNumber());
+		if (existAccount != null) {
+			throw new BusinessException("Account already exists for this document. Accound ID: " + existAccount.getId());
+		}
 		return repository.insert(account);
 	}
 	
