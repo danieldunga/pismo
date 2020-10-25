@@ -3,11 +3,11 @@ package io.pismo.test.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import io.pismo.test.entity.Account;
 import io.pismo.test.entity.OperationType;
 import io.pismo.test.entity.Transaction;
 import io.pismo.test.exception.BusinessException;
 import io.pismo.test.exception.NotFoundException;
+import io.pismo.test.repository.TransactionRepository;
 import io.pismo.test.util.DateUtil;
 
 /**
@@ -18,23 +18,21 @@ import io.pismo.test.util.DateUtil;
 public class TransactionService {
 
 	@Autowired
-	private AccountService accountService;
+	private TransactionRepository repository;
 	
-	private static int transactionId = 1;
+	@Autowired
+	private AccountService accountService;
 	
 	public Transaction insertTransaction(Transaction transaction) throws BusinessException, NotFoundException {
 		
 		if (transaction.getOperationType() != OperationType.PAGAMENTO) {
 			transaction.setAmount(transaction.getAmount().negate());
 		}
-		Account account = accountService.get(transaction.getAccountId());
+		// Check if account exists
+		accountService.get(transaction.getAccountId());
 		transaction.setEventDate(DateUtil.getDate());
-		transaction.setId(transactionId++);
 		
-		account.setTransaction(transaction);
+		return repository.save(transaction);
 		
-		accountService.update(account);
-		
-		return transaction;
 	}
 }

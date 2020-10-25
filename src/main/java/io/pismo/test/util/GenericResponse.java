@@ -20,9 +20,4 @@ public class GenericResponse {
 		return mensage;
 	}
 
-	public void setMensage(String mensage) {
-		this.mensage = mensage;
-	}
-	
-	
 }

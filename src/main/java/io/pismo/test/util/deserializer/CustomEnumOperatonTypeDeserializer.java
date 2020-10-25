@@ -26,7 +26,6 @@ public class CustomEnumOperatonTypeDeserializer extends StdDeserializer<Operatio
         int typeId = node.asInt();
  
         for (OperationType type : OperationType.values()) {
-           
             if (type.getId() == typeId)  {
                 return type;
             }

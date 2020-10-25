@@ -1,12 +1,14 @@
 package io.pismo.test.service;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.pismo.test.entity.Account;
 import io.pismo.test.exception.BusinessException;
 import io.pismo.test.exception.NotFoundException;
-import io.pismo.test.repository.PismoRepository;
+import io.pismo.test.repository.AccountRepository;
 
 /**
  * Account Service class
@@ -16,34 +18,29 @@ import io.pismo.test.repository.PismoRepository;
 public class AccountService {
 	
 	@Autowired
-	private PismoRepository repository;
+	private AccountRepository accountRepository;
 	
 	
 	public Account get(Integer accountId) throws NotFoundException {
-		Account account = repository.findAccount(accountId);
-		if (account == null) {
+		Optional<Account>  account = accountRepository.findById(accountId);
+		if (account.isEmpty()) {
 			throw new NotFoundException("Account not found");
 		}
-		return account;
+		return account.orElseThrow();
 	}
 	
 	public Account insert(Account account) throws BusinessException {
 		if (account.getId() != null) {
-			if (repository.findAccount(account.getId()) != null) {
+			if (accountRepository.findById(account.getId()) != null) {
 				throw new BusinessException("Account already exists");
 			}
 		}
-		Account existAccount = repository.findAccountByDocumentNumber(account.getDocumentNumber());
+		
+		Account existAccount = accountRepository.findByDocumentNumber(account.getDocumentNumber());
 		if (existAccount != null) {
 			throw new BusinessException("Account already exists for this document. Accound ID: " + existAccount.getId());
 		}
-		return repository.insert(account);
+		return accountRepository.save(account);
 	}
 	
-	public Account update(Account account) throws NotFoundException {
-		// check for account
-		this.get(account.getId());
-		
-		return repository.update(account);
-	}
 }

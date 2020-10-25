@@ -32,7 +32,7 @@ class PismoResourceTest {
 
     @Autowired
     private AccountService service;
-	
+    
 	@Test
 	void getAccountNotFound() throws Exception {
 		mockMvc.perform(MockMvcRequestBuilders.get("/accounts/9999")
@@ -45,13 +45,27 @@ class PismoResourceTest {
 	@Test
 	void createAccount() throws Exception {
 		
-		Account account = new Account();
-		account.setDocumentNumber(6789);
+		Account createAccount = new Account();
+		createAccount.setDocumentNumber(1);
 		
 		mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
 		        .contentType("application/json")
-		        .content(objectMapper.writeValueAsString(account)))
+		        .content(objectMapper.writeValueAsString(createAccount)))
 		        .andExpect(MockMvcResultMatchers.status().isCreated())
+		        .andDo(MockMvcRestDocumentation.document("account"));
+	}
+	
+	@Test
+	void createAccountFailDocumentNumber() throws Exception {
+		
+		Account createAccount = new Account();
+		createAccount.setDocumentNumber(10);
+		service.insert(createAccount);
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
+		        .contentType("application/json")
+		        .content(objectMapper.writeValueAsString(createAccount)))
+		        .andExpect(MockMvcResultMatchers.status().isBadRequest())
 		        .andDo(MockMvcRestDocumentation.document("account"));
 	}
 	
@@ -70,12 +84,12 @@ class PismoResourceTest {
 	
 	@Test
 	void getAccount() throws Exception {
-		Account account = new Account();
-		account.setDocumentNumber(123);
 		
-		Account newAccount = service.insert(account);
+		Account createAccount = new Account();
+		createAccount.setDocumentNumber(2);
+		Account account = service.insert(createAccount);
 		
-		mockMvc.perform(MockMvcRequestBuilders.get("/accounts/" + newAccount.getId())
+		mockMvc.perform(MockMvcRequestBuilders.get("/accounts/" + account.getId())
 		        .contentType("application/json")
 		        .content(objectMapper.writeValueAsString("")))
 		        .andExpect(MockMvcResultMatchers.status().isOk())
@@ -84,12 +98,13 @@ class PismoResourceTest {
 	
 	@Test
 	void createTransaction() throws Exception {
-		Account account = new Account();
-		account.setDocumentNumber(123);
-		Account newAccount = service.insert(account);
+		
+		Account createAccount = new Account();
+		createAccount.setDocumentNumber(3);
+		Account account = service.insert(createAccount);
 		
 		Transaction transaction = new Transaction();
-		transaction.setAccountId(newAccount.getId());
+		transaction.setAccountId(account.getId());
 		transaction.setOperationType(OperationType.SAQUE);
 		transaction.setAmount(new BigDecimal(10));
 		
@@ -102,14 +117,15 @@ class PismoResourceTest {
 	
 	@Test
 	void createTransactionFail() throws Exception {
-		Account account = new Account();
-		account.setDocumentNumber(123);
-		Account newAccount = service.insert(account);
+		
+		Account createAccount = new Account();
+		createAccount.setDocumentNumber(4);
+		Account account = service.insert(createAccount);
 		
 		Transaction transaction = new Transaction();
-		transaction.setAccountId(newAccount.getId());
-		transaction.setOperationType(OperationType.SAQUE);
-		transaction.setAmount(new BigDecimal(0));
+		transaction.setAccountId(account.getId());
+		transaction.setOperationType(null);
+		transaction.setAmount(new BigDecimal(10));
 		
 		mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
 		        .contentType("application/json")

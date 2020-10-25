@@ -3,7 +3,10 @@ package io.pismo.test.entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.Min;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,9 +15,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * Transaction POJO
  * @author danielbraga
  */
+@Entity
 public class Transaction implements Comparable<Transaction>{
 	
 	@JsonProperty(value = "transaction_id")
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
 	@JsonProperty(value = "account_id")
@@ -27,7 +33,6 @@ public class Transaction implements Comparable<Transaction>{
 	
 	@JsonProperty(value = "amount")
 	@NotNull(message = "amount cannot be null")
-	@Min(value = (long)0.01, message = "amount must be greater than zero")
 	private BigDecimal amount;
 	
 	private LocalDateTime eventDate;

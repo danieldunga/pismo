@@ -113,7 +113,7 @@ public class PismoResource {
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(Exception.class)
 	public ValidationResponse handleExceptions(Exception e) {
-		logger.error(e.getMessage());
+		logger.error(e);
 		ValidationResponse response = new ValidationResponse();
 		response.add(e.getMessage());
 	    return response;
