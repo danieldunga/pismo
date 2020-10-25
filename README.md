@@ -1,7 +1,7 @@
 # Pismo
 Pismo test
 
-#### requirements
+#### Requirements
 - Mavem 3.6.3
 - Java 11
 - Docker
@@ -14,3 +14,6 @@ mvn clean package dockerfile:build
 ```sh
 docker run -it -p 8080:8080 dbraga/pismo-app
 ```
+
+#### Use
+Endpoints are available at ``http://localhost:8080``
