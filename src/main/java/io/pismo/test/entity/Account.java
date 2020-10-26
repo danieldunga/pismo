@@ -1,5 +1,6 @@
 package io.pismo.test.entity;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,7 +43,23 @@ public class Account {
 	@JoinColumn(name = "accountId")
 	private List<Transaction> transactions = new ArrayList<Transaction>();
 	
+	@JsonProperty(value = "available_credit_limit")
+	@DecimalMin(value = "0", message = "available_credit_limit must be equal or greater than zero")
+	@NotNull(message = "available_credit_limit cannot be null")
+	private BigDecimal availableCreditLimit;
 	
+	public BigDecimal getAvailableCreditLimit() {
+		return availableCreditLimit;
+	}
+
+	public void setAvailableCreditLimit(BigDecimal availableCreditLimit) {
+		this.availableCreditLimit = availableCreditLimit;
+	}
+
+	public void setTransactions(List<Transaction> transactions) {
+		this.transactions = transactions;
+	}
+
 	public Integer getId() {
 		return id;
 	}
@@ -67,6 +84,7 @@ public class Account {
 	public void setTransaction(Transaction transaction) {
 		transactions.add(transaction);
 	}
+	
 	
 	
 }

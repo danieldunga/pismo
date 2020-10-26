@@ -47,6 +47,7 @@ class PismoResourceTest {
 		
 		Account createAccount = new Account();
 		createAccount.setDocumentNumber(1);
+		createAccount.setAvailableCreditLimit(new BigDecimal(100));
 		
 		mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
 		        .contentType("application/json")
@@ -60,6 +61,7 @@ class PismoResourceTest {
 		
 		Account createAccount = new Account();
 		createAccount.setDocumentNumber(10);
+		createAccount.setAvailableCreditLimit(new BigDecimal(100));
 		service.insert(createAccount);
 		
 		mockMvc.perform(MockMvcRequestBuilders.post("/accounts")
@@ -87,6 +89,7 @@ class PismoResourceTest {
 		
 		Account createAccount = new Account();
 		createAccount.setDocumentNumber(2);
+		createAccount.setAvailableCreditLimit(new BigDecimal(100));
 		Account account = service.insert(createAccount);
 		
 		mockMvc.perform(MockMvcRequestBuilders.get("/accounts/" + account.getId())
@@ -101,6 +104,7 @@ class PismoResourceTest {
 		
 		Account createAccount = new Account();
 		createAccount.setDocumentNumber(3);
+		createAccount.setAvailableCreditLimit(new BigDecimal(100));
 		Account account = service.insert(createAccount);
 		
 		Transaction transaction = new Transaction();
@@ -120,12 +124,53 @@ class PismoResourceTest {
 		
 		Account createAccount = new Account();
 		createAccount.setDocumentNumber(4);
+		createAccount.setAvailableCreditLimit(new BigDecimal(100));
 		Account account = service.insert(createAccount);
 		
 		Transaction transaction = new Transaction();
 		transaction.setAccountId(account.getId());
 		transaction.setOperationType(null);
 		transaction.setAmount(new BigDecimal(10));
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
+		        .contentType("application/json")
+		        .content(objectMapper.writeValueAsString(transaction)))
+		        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+		        .andDo(MockMvcRestDocumentation.document("transaction"));
+	}
+	
+	@Test
+	void createTransactionFailAvailableCreditLimit() throws Exception {
+		
+		Account createAccount = new Account();
+		createAccount.setDocumentNumber(7);
+		createAccount.setAvailableCreditLimit(new BigDecimal(5));
+		Account account = service.insert(createAccount);
+		
+		Transaction transaction = new Transaction();
+		transaction.setAccountId(account.getId());
+		transaction.setOperationType(OperationType.COMPRA_PARCELADA);
+		transaction.setAmount(new BigDecimal(10));
+		
+		mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
+		        .contentType("application/json")
+		        .content(objectMapper.writeValueAsString(transaction)))
+		        .andExpect(MockMvcResultMatchers.status().isBadRequest())
+		        .andDo(MockMvcRestDocumentation.document("transaction"));
+	}
+	
+	@Test
+	void createTransactionFailAmountNegative() throws Exception {
+		
+		Account createAccount = new Account();
+		createAccount.setDocumentNumber(8);
+		createAccount.setAvailableCreditLimit(new BigDecimal(5));
+		Account account = service.insert(createAccount);
+		
+		Transaction transaction = new Transaction();
+		transaction.setAccountId(account.getId());
+		transaction.setOperationType(OperationType.COMPRA_PARCELADA);
+		transaction.setAmount(new BigDecimal(-10));
 		
 		mockMvc.perform(MockMvcRequestBuilders.post("/transactions")
 		        .contentType("application/json")

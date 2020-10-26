@@ -3,6 +3,7 @@ package io.pismo.test.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.pismo.test.entity.Account;
 import io.pismo.test.entity.OperationType;
 import io.pismo.test.entity.Transaction;
 import io.pismo.test.exception.BusinessException;
@@ -29,8 +30,10 @@ public class TransactionService {
 			transaction.setAmount(transaction.getAmount().negate());
 		}
 		// Check if account exists
-		accountService.get(transaction.getAccountId());
+		Account account = accountService.get(transaction.getAccountId());
 		transaction.setEventDate(DateUtil.getDate());
+		
+		accountService.availableCreditLimit(account, transaction.getAmount());
 		
 		return repository.save(transaction);
 		
